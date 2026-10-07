@@ -5,7 +5,7 @@
     "": {
       "name": "base-astro-tw-plot",
       "dependencies": {
-        "@astrojs/netlify": "^8.2.3",
+        "@astrojs/netlify": "^8.2.7",
         "@astrojs/node": "^11.1.7",
         "@observablehq/plot": "^0.6.17",
         "@tailwindcss/vite": "^4.3.3",
