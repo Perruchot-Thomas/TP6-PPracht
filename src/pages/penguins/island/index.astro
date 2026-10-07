@@ -1,0 +1,23 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import penguins from "../../../assets/penguins.json";
+
+const islands = [...new Set(penguins.map((p: any) => p.island))].filter(i => i && i !== "NaN");
+---
+
+<Layout title="Index - Pingouins par Île">
+  <div class="max-w-2xl mx-auto p-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm mt-12 mb-12">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-extrabold text-slate-900">Pingouins par Île (SSG)</h1>
+      <a href="/" class="text-xs font-semibold px-4 py-2.5 rounded-xl bg-slate-50 text-slate-700 border border-slate-200/60 transition hover:bg-slate-100">← Retour Accueil</a>
+    </div>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      {islands.map((island) => (
+        <a href={`/penguins/island/${island}`} class="flex justify-center p-4 rounded-xl border border-slate-200 hover:border-emerald-500 hover:shadow-sm transition bg-slate-50 font-medium text-emerald-700">
+          Île {island}
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>

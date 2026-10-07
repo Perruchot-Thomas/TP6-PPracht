@@ -1,0 +1,61 @@
+---
+import { Tabs, TabsList, TabsTab, TabsPanel } from 'accessible-astro-components';
+import Layout from '../layouts/Layout.astro';
+import PlotFigure from "../components/PlotFigure.astro";
+import * as Plot from "@observablehq/plot";
+import cars from "../assets/cars.json";
+import '../styles/global.css';
+
+const yearsList = [...new Set(cars.map((c: any) => c.year))].sort();
+
+const getPlotOptions = (yearName: number) => {
+  const data = cars.filter((c: any) => c.year === yearName);
+  return {
+    grid: true, inset: 10,
+    x: { label: "Poids (lb)" },
+    y: { label: "Puissance (hp)" },
+    title: `Modèles de l'année ${yearName}`,
+    marks: [
+      Plot.frame({ stroke: "#e2e8f0" }),
+      Plot.dot(data, { x: "weight (lb)", y: "power (hp)", fill: "#f59e0b", r: 5, fillOpacity: 0.8 })
+    ],
+  };
+};
+---
+
+<Layout title="TP - Voitures Boucle">
+  <div class="max-w-4xl mx-auto p-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm mt-12 mb-12">
+    
+    <div class="flex items-center justify-between mb-8 border-b border-slate-100 pb-6">
+      <h1 class="text-2xl font-extrabold text-slate-900">Toutes les Voitures (Boucle)</h1>
+      <a href="/" class="text-xs font-semibold px-4 py-2.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200/60 transition shadow-sm hover:bg-amber-100">← Retour</a>
+    </div>
+
+    <Tabs>
+      <TabsList class="flex flex-wrap gap-2 border-b border-slate-200 pb-2 mb-6">
+        {yearsList.map((year, index) => (
+          <TabsTab 
+            id={`tab-${index}`} 
+            controls={`panel-${index}`} 
+            selected={index === 0} 
+            class="px-4 py-2 rounded-lg font-medium text-sm text-slate-600 hover:bg-slate-100 aria-selected:!bg-amber-600 aria-selected:!text-white transition"
+          >
+            Année {year}
+          </TabsTab>
+        ))}
+      </TabsList>
+
+      {yearsList.map((year, index) => (
+        <TabsPanel id={`panel-${index}`} labelledby={`tab-${index}`} selected={index === 0}>
+          <div class="bg-slate-50/50 rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+            <p class="mb-4 text-sm text-slate-500 text-center font-medium">
+              Aperçu des données pour la cuvée {year}
+            </p>
+            <PlotFigure options={getPlotOptions(year as number)} />
+          </div>
+        </TabsPanel>
+      ))}
+    </Tabs>
+    
+  </div>
+</Layout>
