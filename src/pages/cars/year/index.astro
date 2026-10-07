@@ -1,0 +1,24 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import cars from "../../../assets/cars.json";
+
+// Extraction automatique des années
+const years = [...new Set(cars.map((c: any) => c.year))].sort();
+---
+
+<Layout title="Index - Voitures par Année">
+  <div class="max-w-2xl mx-auto p-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm mt-12 mb-12">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-extrabold text-slate-900">Voitures par année (SSG)</h1>
+      <a href="/" class="text-xs font-semibold px-4 py-2.5 rounded-xl bg-slate-50 text-slate-700 border border-slate-200/60 transition">← Retour</a>
+    </div>
+    
+    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      {years.map((y) => (
+        <a href={`/cars/year/${y}`} class="flex justify-center p-3 rounded-xl border border-slate-200 hover:border-amber-500 hover:shadow-sm transition bg-slate-50 font-medium text-amber-700">
+          Année {y}
+        </a>
+      ))}
+    </div>
+  </div>
+</Layout>

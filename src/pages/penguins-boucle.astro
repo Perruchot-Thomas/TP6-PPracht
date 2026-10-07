@@ -1,0 +1,54 @@
+---
+import { Tabs, TabsList, TabsTab, TabsPanel } from 'accessible-astro-components';
+import Layout from '../layouts/Layout.astro';
+import PlotFigure from "../components/PlotFigure.astro";
+import * as Plot from "@observablehq/plot";
+import penguins from "../assets/penguins.json";
+import '../styles/global.css';
+
+// 1. Extraction automatique des espèces
+const speciesList = [...new Set(penguins.map((p: any) => p.species))].filter(s => s && s !== "NaN");
+
+const getPlotOptions = (speciesName: string) => {
+  const data = penguins.filter((p: any) => p.species === speciesName && p.culmen_length_mm !== "NaN");
+  return {
+    grid: true, inset: 10,
+    x: { label: "Longueur du bec (mm)" },
+    y: { label: "Profondeur du bec (mm)" },
+    marks: [
+      Plot.frame({ stroke: "#e2e8f0" }),
+      Plot.dot(data, { x: "culmen_length_mm", y: "culmen_depth_mm", fill: "species", r: 4 })
+    ],
+  };
+};
+---
+
+<Layout title="TP - Pingouins Boucle">
+  <div class="max-w-4xl mx-auto p-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm mt-12 mb-12">
+    <div class="flex items-center justify-between mb-8 border-b border-slate-100 pb-6">
+      <h1 class="text-2xl font-extrabold text-slate-900">Tous les Pingouins (Boucle)</h1>
+      <a href="/" class="text-xs font-semibold px-4 py-2.5 rounded-xl bg-slate-50 text-slate-700 border border-slate-200/60 transition shadow-sm">← Retour</a>
+    </div>
+
+    <Tabs>
+      <TabsList class="flex gap-2 border-b border-slate-200 pb-2 mb-6">
+        {speciesList.map((species, index) => (
+          <TabsTab 
+            id={`tab-${index}`} controls={`panel-${index}`} selected={index === 0} 
+            class="px-4 py-2 rounded-lg font-medium text-sm text-slate-600 hover:bg-slate-100 aria-selected:!bg-indigo-900 aria-selected:!text-white transition"
+          >
+            {species}
+          </TabsTab>
+        ))}
+      </TabsList>
+
+      {speciesList.map((species, index) => (
+        <TabsPanel id={`panel-${index}`} labelledby={`tab-${index}`} selected={index === 0}>
+          <div class="bg-slate-50/50 rounded-2xl border border-slate-200/80 p-6">
+            <PlotFigure options={getPlotOptions(species as string)} />
+          </div>
+        </TabsPanel>
+      ))}
+    </Tabs>
+  </div>
+</Layout>
