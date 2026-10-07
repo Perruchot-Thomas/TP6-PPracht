@@ -1,0 +1,50 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import PlotFigure from "../../../components/PlotFigure.astro";
+import * as Plot from "@observablehq/plot";
+import penguins from "../../../assets/penguins.json";
+
+export function getStaticPaths() {
+  const islands = [...new Set(penguins.map((p: any) => p.island))].filter(i => i && i !== "NaN");
+  
+  return islands.map((island) => ({
+    params: { island: island as string }
+  }));
+}
+
+const { island } = Astro.params;
+
+const filteredPenguins = penguins.filter((p: any) => p.island === island && p.culmen_length_mm !== "NaN");
+
+const plotOptions = {
+  grid: true, inset: 10,
+  x: { label: "Longueur du bec (mm)" },
+  y: { label: "Profondeur du bec (mm)" },
+  title: `Répartition des espèces sur l'île ${island}`,
+  color: { legend: true },
+  marks: [
+    Plot.frame({ stroke: "#e2e8f0" }),
+    Plot.dot(filteredPenguins, { x: "culmen_length_mm", y: "culmen_depth_mm", fill: "species", r: 5, fillOpacity: 0.8 })
+  ]
+};
+---
+
+<Layout title={`Île - ${island}`}>
+  <div class="max-w-4xl mx-auto p-8 bg-white rounded-2xl border border-slate-200/80 shadow-sm mt-12 mb-12">
+    <div class="flex items-center justify-between mb-6 border-b border-slate-100 pb-6">
+      <div>
+        <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700 mb-2 inline-block">SSG (getStaticPaths)</span>
+        <h1 class="text-2xl font-extrabold text-slate-900">Île de {island}</h1>
+      </div>
+      <a href="/penguins/island" class="text-xs font-semibold px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-700 transition hover:bg-emerald-100">← Retour Liste</a>
+    </div>
+    
+    <p class="mb-6 text-sm text-slate-600 bg-slate-50 p-3 rounded-lg border border-slate-200 inline-block">
+      {filteredPenguins.length} spécimen(s) enregistré(s) sur cette île.
+    </p>
+
+    <div class="bg-slate-50/50 rounded-2xl border border-slate-200/80 p-6 shadow-sm">
+      <PlotFigure options={plotOptions} />
+    </div>
+  </div>
+</Layout>
